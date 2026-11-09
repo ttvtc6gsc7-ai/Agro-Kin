@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'api',
 
         # Applications RoboAgri-Kin
     'parcelles',
@@ -45,6 +47,16 @@ INSTALLED_APPS = [
     'irrigation',
     'incidents',
 ]
+
+REST_FRAMEWORK = {
+    # Les routes humaines utilisent une session Django ou Basic auth. Les
+    # robots ont leur propre mécanisme dans api.authentication.
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
