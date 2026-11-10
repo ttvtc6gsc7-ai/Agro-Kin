@@ -16,12 +16,12 @@ from missions.services import ErreurMission, ajouter_etape, creer_mission, enreg
 from parcelles.models import Culture, Parcelle, Seuil, Zone
 
 from .authentication import RobotTokenAuthentication
-from .permissions import IsAdminRole, IsHumanAuthenticated, IsOperatorOrAdmin, IsRobotAuthenticated
+from .permissions import IsAdminRole, IsHumanAuthenticated, IsOperatorOrAdmin, IsOperatorOrAdminOrReadOnly, IsRobotAuthenticated
 from .serializers import *
 
 
 class HumanModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsOperatorOrAdmin]
+    permission_classes = [IsOperatorOrAdminOrReadOnly]
 
 class CultureViewSet(HumanModelViewSet): queryset = Culture.objects.all(); serializer_class = CultureSerializer
 class ParcelleViewSet(HumanModelViewSet): queryset = Parcelle.objects.all(); serializer_class = ParcelleSerializer

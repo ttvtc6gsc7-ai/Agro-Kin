@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connexion – RoboAgri-Kin</title>
+  <link href="/vendor/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="page-connexion">
+<main>
+  <section class="carte">
+    <p class="brand-login mb-3"><i class="bi bi-flower2" aria-hidden="true"></i> Robo<span>Agri</span>-Kin</p>
+    <h1 class="h4 mb-2" style="color:var(--vf)">Connexion</h1>
+    <p class="text-muted mb-4">Identifiez-vous avec un compte Django (opérateur ou administrateur). La session et le jeton CSRF sont gérés par le serveur.</p>
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">{{ form.non_field_errors|join:" " }}</div>
+    {% endif %}
+    <form method="post" action="{% url 'login' %}" class="row g-3">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="col-12">
+        <label class="form-label" for="id_username">Nom d'utilisateur</label>
+        <input class="form-control" type="text" name="username" id="id_username" value="{{ form.username.value|default:'' }}" required autofocus autocomplete="username">
+        {% if form.username.errors %}<div class="form-text text-danger">{{ form.username.errors|join:" " }}</div>{% endif %}
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="id_password">Mot de passe</label>
+        <input class="form-control" type="password" name="password" id="id_password" required autocomplete="current-password">
+        {% if form.password.errors %}<div class="form-text text-danger">{{ form.password.errors|join:" " }}</div>{% endif %}
+      </div>
+      <div class="col-12">
+        <button class="btn btn-success w-100" type="submit">Se connecter</button>
+      </div>
+    </form>
+  </section>
+</main>
+</body>
+</html>

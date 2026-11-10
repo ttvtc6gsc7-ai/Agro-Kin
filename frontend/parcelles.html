@@ -1,0 +1,41 @@
+﻿<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parcelles et zones – RoboAgri-Kin</title>
+<link href="vendor/bootstrap.min.css" rel="stylesheet">
+<link href="vendor/bootstrap-icons.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet"></head>
+<body data-page="parcelles"><main>
+<h1 class="h3 mb-4" style="color:var(--vf)">Parcelles et zones</h1>
+<div class="row g-4 mb-4">
+<div class="col-xl-6"><section class="carte h-100"><h2>Nouvelle ou modifier une parcelle</h2>
+<form id="parcelForm" class="row g-3">
+<input type="hidden" id="parcelId">
+<div class="col-md-6"><label class="form-label" for="parcelName">Nom de la parcelle <span class="text-danger">*</span></label><input class="form-control" id="parcelName" required maxlength="100"></div>
+<div class="col-md-6"><label class="form-label" for="parcelArea">Superficie <span class="text-danger">*</span></label><input class="form-control" id="parcelArea" type="number" required min="0.01" step="0.01"></div>
+<div class="col-12"><label class="form-label" for="parcelLocation">Localisation <span class="text-danger">*</span></label><input class="form-control" id="parcelLocation" required maxlength="255"></div>
+<div class="col-12 d-flex gap-2"><button class="btn btn-success" type="submit">Enregistrer la parcelle</button><button class="btn btn-outline-secondary d-none" id="cancelParcelEdit" type="button">Annuler la modification</button></div>
+</form></section></div>
+<div class="col-xl-6"><section class="carte h-100"><h2>Nouvelle ou modifier une zone</h2>
+<form id="zoneForm" class="row g-3">
+<input type="hidden" id="zoneId">
+<div class="col-md-6"><label class="form-label" for="zoneParcel">Parcelle <span class="text-danger">*</span></label><select class="form-select" id="zoneParcel" required></select></div>
+<div class="col-md-6"><label class="form-label" for="zoneName">Nom de la zone <span class="text-danger">*</span></label><input class="form-control" id="zoneName" required maxlength="100"></div>
+<div class="col-md-6"><label class="form-label" for="zoneCulture">Culture <span class="text-danger">*</span></label><select class="form-select" id="zoneCulture" required></select></div>
+<div class="col-12 d-flex gap-2"><button class="btn btn-success" type="submit">Enregistrer la zone</button><button class="btn btn-outline-secondary d-none" id="cancelZoneEdit" type="button">Annuler la modification</button></div>
+</form></section></div></div>
+<div class="row g-4 mb-4">
+<div class="col-xl-6"><section class="carte h-100"><h2>Nouvelle ou modifier une culture</h2>
+<form id="cultureForm" class="row g-3">
+<input type="hidden" id="cultureId">
+<div class="col-md-6"><label class="form-label" for="cultureName">Nom de la culture <span class="text-danger">*</span></label><input class="form-control" id="cultureName" required maxlength="100"></div>
+<div class="col-md-6"><label class="form-label" for="cultureType">Type de culture <span class="text-danger">*</span></label><input class="form-control" id="cultureType" required maxlength="100" autocomplete="off"></div>
+<div class="col-12"><label class="form-label" for="cultureDescription">Description</label><textarea class="form-control" id="cultureDescription" rows="2" maxlength="2000"></textarea></div>
+<div class="col-12 d-flex gap-2"><button class="btn btn-success" type="submit">Enregistrer la culture</button><button class="btn btn-outline-secondary d-none" id="cancelCultureEdit" type="button">Annuler la modification</button></div>
+</form></section></div>
+<div class="col-xl-6"><section class="carte h-100"><h2>Cultures enregistrées</h2><div id="culturesListe"></div></section></div>
+</div>
+<section class="carte"><h2>Parcelles et zones enregistrées</h2><div id="contenu"></div></section>
+</main>
+<script src="vendor/plotly.min.js"></script>
+<script src="vendor/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script><script src="js/api.js"></script><script src="js/app.js"></script></body></html>

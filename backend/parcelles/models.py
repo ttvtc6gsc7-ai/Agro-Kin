@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -13,7 +15,7 @@ class Culture(models.Model):
 
 class Parcelle(models.Model):
     nom = models.CharField(max_length=100, unique=True)
-    superficie = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)])
+    superficie = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.01"))])
     localisation = models.CharField(max_length=255)
 
     def __str__(self):

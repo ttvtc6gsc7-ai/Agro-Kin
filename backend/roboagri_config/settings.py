@@ -25,7 +25,32 @@ SECRET_KEY = 'django-insecure--2aq*7-7@(@2**lem751ie(044xwl-upzeh67)+&_&dlvga#kn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Accès depuis ce PC et depuis d'autres appareils du Wi-Fi local.
+ALLOWED_HOSTS = ["*"]
+
+# Origines autorisées pour la validation CSRF en local et sur réseau Wi-Fi.
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1",
+    "http://localhost",
+]
+
+# Répertoire des pages HTML/CSS/JS (hors applications Django).
+FRONTEND_DIR = BASE_DIR.parent / "frontend"
+
+LOGIN_URL = "/connexion/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/connexion/"
+
+# HTTP local (PC + Wi-Fi) : les cookies ne doivent pas exiger HTTPS.
+# Le JS lit csrftoken pour poser l'en-tête X-CSRFToken sur fetch() non GET.
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SAMESITE = "Lax"
 
 
 # Application definition
@@ -49,11 +74,11 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    # Les routes humaines utilisent une session Django ou Basic auth. Les
-    # robots ont leur propre mécanisme dans api.authentication.
+    # Interface humaine : cookie de session Django + CSRF (pas de Basic, pas de JWT).
+    # Les robots s'authentifient uniquement via X-Robot-Id / X-Robot-Token
+    # sur les vues /api/robot/… (api.authentication.RobotTokenAuthentication).
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
 }
@@ -73,11 +98,12 @@ ROOT_URLCONF = 'roboagri_config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
+                'django.template.context_processors.csrf',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -121,9 +147,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "fr"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 

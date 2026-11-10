@@ -1,0 +1,43 @@
+/* Palette et couleurs fonctionnelles du thème agricole. */
+:root{--vf:#1f4d36;--vf2:#2b6648;--vc:#8bc34a;--vcb:#eef6e4;--gris:#f3f4f6;--bord:#e3e6e8;--bleu:#2f80c9}
+body{background:#fff;color:#222;font-family:system-ui,"Segoe UI",Roboto,sans-serif}
+.page-connexion{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--gris)}
+.page-connexion main{margin:0;max-width:28rem;width:100%;padding:1.5rem}
+.brand-login{font-weight:700;font-size:1.2rem;color:var(--vf)}.brand-login span{color:var(--vc)}
+.sidebar-session{margin:1rem 1.5rem 0;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+.sidebar-session .btn{color:#fff;border-color:rgba(255,255,255,.35)}
+.sidebar-session .btn:hover{background:var(--vf2);border-color:#fff;color:#fff}
+/* Navigation fixe sur grand écran, repliée en menu mobile. */
+.sidebar{width:250px;background:var(--vf);color:#fff;position:fixed;inset:0 auto 0 0;padding:1.25rem 0;overflow-y:auto;z-index:1040;transition:transform .2s}
+.sidebar .brand{padding:0 1.5rem 1.25rem;font-weight:700;font-size:1.2rem}.sidebar .brand span{color:var(--vc)}
+.sidebar a{display:flex;gap:.75rem;align-items:center;color:#d5e5db;text-decoration:none;padding:.7rem 1.5rem;border-left:4px solid transparent}
+.sidebar a:hover,.sidebar a.active{background:var(--vf2);color:#fff}.sidebar a.active{border-left-color:var(--vc)}
+.sidebar-note{margin:1rem 1.5rem 0;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2);color:#d5e5db;font-size:.78rem;line-height:1.5}
+main{margin-left:250px;padding:2rem 2.25rem;min-height:calc(100vh - 5rem)}.topbar-mobile{display:none}
+.app-footer{margin:1rem 0 0 250px;padding:1rem 2.25rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;color:#626a70;font-size:.8rem;border-top:1px solid var(--bord)}
+/* Composants communs des tableaux de bord et des pages de consultation. */
+.carte{background:#fff;border:1px solid var(--bord);border-radius:12px;padding:1.25rem}
+.carte h2{font-size:1rem;font-weight:600;margin-bottom:1rem}
+.kpi .val{font-size:1.9rem;font-weight:700;color:var(--vf)}.kpi .lib{color:#6b7280;font-size:.85rem}
+.table th{color:#6b7280;font-weight:600;font-size:.8rem;text-transform:uppercase}
+.etat{display:inline-block;padding:.2rem .65rem;border-radius:99px;font-size:.8rem;font-weight:600}
+.etat-ok{background:var(--vcb);color:#2e6b1f}.etat-cours{background:#e1effa;color:var(--bleu)}
+.etat-off{background:var(--gris);color:#555}.etat-err{background:#fdeaea;color:#b3261e}
+.vide{color:#8a8f94;text-align:center;padding:1.5rem 1rem;background:var(--gris);border-radius:10px}
+.badge-demo{background:#fff4d6;color:#8a5a00;border:1px solid #f1d58a;border-radius:8px;padding:.5rem .9rem;font-size:.85rem;margin-bottom:1.25rem}
+.chart{min-height:280px}
+.activity-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--bord)}
+.activity-row:last-child{border-bottom:0}
+.activity-row .etat{margin-bottom:.35rem}
+.parcel-block{padding:1rem 0;border-bottom:1px solid var(--bord)}
+.parcel-block:last-child{border-bottom:0;padding-bottom:0}
+.ordered-steps{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;padding-left:1.5rem}
+.ordered-steps li{padding:.2rem .25rem}
+.table{--bs-table-bg:transparent}
+.btn-success{--bs-btn-bg:var(--vf2);--bs-btn-border-color:var(--vf2);--bs-btn-hover-bg:var(--vf);--bs-btn-hover-border-color:var(--vf)}
+.form-text{line-height:1.45}
+.table-responsive{border-radius:8px}
+.form-select:focus,.form-control:focus,.btn:focus-visible{border-color:var(--vc);box-shadow:0 0 0 .2rem rgba(139,195,74,.25)}
+/* Adaptation aux écrans tablette et téléphone. */
+@media(max-width:991px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}main{margin-left:0;padding:1.25rem;min-height:calc(100vh - 7rem)}.topbar-mobile{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}.app-footer{margin-left:0;padding:1rem 1.25rem}}
+@media(max-width:575px){.app-footer{flex-direction:column}.carte{padding:1rem}.activity-row{align-items:flex-start}}

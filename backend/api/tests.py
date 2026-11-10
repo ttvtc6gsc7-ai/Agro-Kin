@@ -46,6 +46,83 @@ class ApiSecurityTests(TestCase):
     def test_human_routes_require_authentication(self):
         self.assertEqual(self.client.get("/api/parcelles/").status_code, 403)
 
+    def test_frontend_requires_session_and_sets_csrf_cookie(self):
+        anonymous = self.client.get("/")
+        self.assertEqual(anonymous.status_code, 302)
+        self.assertIn("/connexion/", anonymous.url)
+        self.client.login(username="operator", password="secret")
+        page = self.client.get("/")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("csrftoken", page.cookies)
+        me = self.client.get("/api/auth/me/")
+        self.assertEqual(me.status_code, 200)
+        self.assertEqual(me.json()["username"], "operator")
+
+    def test_login_page_is_public(self):
+        response = self.client.get("/connexion/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("csrftoken", response.cookies)
+
+    def test_auth_me_rejects_anonymous_session(self):
+        response = self.client.get("/api/auth/me/")
+        self.assertEqual(response.status_code, 403)
+        self.assertIn("detail", response.json())
+
+    def test_auth_me_anonymous_request_returns_french_error_detail(self):
+        response = self.client.get("/api/auth/me/")
+        self.assertEqual(response.status_code, 403)
+        detail = response.json().get("detail", "")
+        self.assertIn("authentification", detail.lower())
+
+    def test_auth_me_authenticated_request_returns_user_data(self):
+        self.client.login(username="operator", password="secret")
+        response = self.client.get("/api/auth/me/")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["username"], "operator")
+        self.assertIn("Operateur", data["groups"])
+
+    def test_session_remains_valid_across_multiple_requests(self):
+        self.client.login(username="operator", password="secret")
+        first = self.client.get("/api/auth/me/")
+        self.assertEqual(first.status_code, 200)
+        second = self.client.get("/")
+        self.assertEqual(second.status_code, 200)
+        third = self.client.get("/api/auth/me/")
+        self.assertEqual(third.status_code, 200)
+        self.assertEqual(third.json()["username"], "operator")
+
+    def test_post_request_with_invalid_csrf_is_rejected(self):
+        csrf_client = APIClient(enforce_csrf_checks=True)
+        self.assertTrue(csrf_client.login(username="operator", password="secret"))
+        csrf_client.get("/")
+        # Sans jeton CSRF
+        no_csrf = csrf_client.post("/deconnexion/")
+        self.assertEqual(no_csrf.status_code, 403)
+        # Avec un jeton CSRF invalide/corrompu
+        bad_csrf = csrf_client.post("/deconnexion/", HTTP_X_CSRFTOKEN="token-invalide-12345")
+        self.assertEqual(bad_csrf.status_code, 403)
+
+    def test_post_request_with_valid_csrf_is_accepted(self):
+        csrf_client = APIClient(enforce_csrf_checks=True)
+        self.assertTrue(csrf_client.login(username="operator", password="secret"))
+        page = csrf_client.get("/")
+        token = page.cookies["csrftoken"].value
+        valid_post = csrf_client.post("/deconnexion/", HTTP_X_CSRFTOKEN=token)
+        self.assertIn(valid_post.status_code, (200, 302))
+
+    def test_logout_requires_csrf_then_clears_session(self):
+        csrf_client = APIClient(enforce_csrf_checks=True)
+        self.assertTrue(csrf_client.login(username="operator", password="secret"))
+        page = csrf_client.get("/")
+        token = page.cookies["csrftoken"].value
+        self.assertEqual(csrf_client.get("/api/auth/me/").status_code, 200)
+        self.assertEqual(csrf_client.post("/deconnexion/").status_code, 403)
+        self.assertEqual(csrf_client.get("/api/auth/me/").status_code, 200)
+        logout = csrf_client.post("/deconnexion/", HTTP_X_CSRFTOKEN=token)
+        self.assertIn(logout.status_code, (200, 302))
+        self.assertEqual(csrf_client.get("/api/auth/me/").status_code, 403)
+
     def test_only_operator_can_authorize_irrigation(self):
         _, _, recommendation = recevoir_mesure(robot_id=self.robot.pk, mission_id=self.mission.pk, zone_id=self.zone.pk, valeur_brute=100, date_heure=timezone.now(), message_id=uuid4())
         self.client.force_authenticate(self.visitor)

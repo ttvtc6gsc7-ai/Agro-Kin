@@ -1,0 +1,25 @@
+﻿<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Irrigation – RoboAgri-Kin</title>
+<link href="vendor/bootstrap.min.css" rel="stylesheet">
+<link href="vendor/bootstrap-icons.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet"></head>
+<body data-page="irrigation"><main>
+<h1 class="h3 mb-4" style="color:var(--vf)">Irrigation</h1>
+<section class="carte mb-4"><h2>Configuration par zone</h2>
+<p class="text-muted">Les seuils sont des valeurs brutes, à déterminer par étalonnage et essais. Cette configuration est enregistrée pour la démonstration ; elle ne commande pas le robot.</p>
+<form id="irrigationConfigForm" class="row g-3">
+<div class="col-md-3"><label class="form-label" for="configZone">Zone <span class="text-danger">*</span></label><select class="form-select" id="configZone" required></select></div>
+<div class="col-md-3"><label class="form-label" for="humidityThreshold">Seuil d'humidité (valeur brute) <span class="text-danger">*</span></label><input class="form-control" id="humidityThreshold" type="number" min="0" step="any" required></div>
+<div class="col-md-3"><label class="form-label" for="maxDuration">Durée maximale (secondes) <span class="text-danger">*</span></label><input class="form-control" id="maxDuration" type="number" min="1" step="1" required></div>
+<div class="col-md-3"><label class="form-label" for="maxVolume">Volume maximal (litres, facultatif)</label><input class="form-control" id="maxVolume" type="number" min="0" step="any"></div>
+<div class="col-12"><button class="btn btn-success" type="submit">Enregistrer la configuration</button></div></form></section>
+<section class="carte mb-4"><h2>Règle de décision</h2><ul class="mb-0"><li>Humidité suffisante : aucune intervention.</li><li>Humidité insuffisante : arrosage recommandé ou autorisé.</li><li>Mesure invalide ou capteur défaillant : arrosage interdit et incident signalé.</li></ul></section>
+<section class="carte mb-4"><h2>Zones nécessitant une irrigation (recommandations)</h2><div id="recommendations"></div></section>
+<div class="row g-4 mb-4"><div class="col-md-4"><div class="carte kpi"><div class="lib">Dernier arrosage</div><div class="mt-2" id="lastWatering">—</div></div></div><div class="col-md-4"><div class="carte kpi"><div class="val" id="wateringCount">—</div><div class="lib">Arrosages reçus (7 derniers jours)</div></div></div><div class="col-md-4"><div class="carte kpi"><div class="val" id="waterVolume">—</div><div class="lib">Volume total reçu</div></div></div></div>
+<div class="row g-4 mb-4"><div class="col-lg-6"><div class="carte"><h2>Arrosages dans le temps</h2><div class="chart" id="irrigationGraph"></div></div></div><div class="col-lg-6"><div class="carte"><h2>Humidité avant / après arrosage</h2><div class="chart" id="humidityWateringGraph"></div></div></div></div>
+<div class="carte"><h2>Historique des arrosages</h2><div id="tableau"></div></div>
+</main>
+<script src="vendor/plotly.min.js"></script>
+<script src="vendor/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script><script src="js/api.js"></script><script src="js/app.js"></script></body></html>
