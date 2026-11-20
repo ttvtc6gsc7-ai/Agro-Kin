@@ -47,11 +47,12 @@ class ApiSecurityTests(TestCase):
         self.assertEqual(self.client.get("/api/parcelles/").status_code, 403)
 
     def test_frontend_requires_session_and_sets_csrf_cookie(self):
-        anonymous = self.client.get("/")
+        self.assertEqual(self.client.get("/").status_code, 200)
+        anonymous = self.client.get("/dashboard.html")
         self.assertEqual(anonymous.status_code, 302)
         self.assertIn("/connexion/", anonymous.url)
         self.client.login(username="operator", password="secret")
-        page = self.client.get("/")
+        page = self.client.get("/dashboard.html")
         self.assertEqual(page.status_code, 200)
         self.assertIn("csrftoken", page.cookies)
         me = self.client.get("/api/auth/me/")
@@ -62,6 +63,39 @@ class ApiSecurityTests(TestCase):
         response = self.client.get("/connexion/")
         self.assertEqual(response.status_code, 200)
         self.assertIn("csrftoken", response.cookies)
+
+    def test_new_frontend_and_documentation_routes(self):
+        self.client.login(username="operator", password="secret")
+        for path in ("/index.html", "/dashboard.html", "/parcelles.html", "/robot.html", "/mesures.html", "/missions.html", "/irrigation.html", "/incidents.html", "/historique.html", "/rapports.html", "/documentation/", "/documentation/style.css", "/documentation/script.js", "/images/champ.jpg", "/images/robot.jpg"):
+            with self.subTest(path=path):
+                self.assertEqual(self.client.get(path).status_code, 200)
+        for path in ("/documentation/build.py", "/documentation/../backend/db.sqlite3", "/images/../js/api.js"):
+            self.assertEqual(self.client.get(path).status_code, 404)
+
+    def test_supervision_is_protected_and_contains_no_robot_secrets(self):
+        self.assertEqual(self.client.get("/api/supervision/").status_code, 403)
+        self.client.force_authenticate(self.visitor)
+        self.assertEqual(self.client.get("/api/supervision/").status_code, 403)
+        self.client.force_authenticate(self.operator)
+        recevoir_mesure(robot_id=self.robot.pk, mission_id=self.mission.pk, zone_id=self.zone.pk, valeur_brute=100, date_heure=timezone.now(), message_id=uuid4())
+        response = self.client.get("/api/supervision/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["mesures"]), 1)
+        self.assertEqual(response.data["mesures"][0]["zone"], self.zone.pk)
+        self.assertNotIn("jeton_hash", str(response.data))
+        self.assertNotIn(self.token, str(response.data))
+
+    def test_mission_creation_with_ordered_zones(self):
+        self.client.force_authenticate(self.operator)
+        other_zone = Zone.objects.create(nom="Z2", parcelle=self.zone.parcelle, culture=self.zone.culture)
+        response = self.client.post("/api/missions/", {"robot": self.robot.pk, "date_mission": timezone.now().isoformat(), "zones": [other_zone.pk, self.zone.pk]}, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual([step["zone"] for step in response.data["etapes"]], [other_zone.pk, self.zone.pk])
+        self.assertEqual(response.data["etat_transmission"], "en_attente")
+        before = type(self.mission).objects.count()
+        response = self.client.post("/api/missions/", {"robot": self.robot.pk, "date_mission": timezone.now().isoformat(), "zones": [self.zone.pk, 999999]}, format="json")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(type(self.mission).objects.count(), before)
 
     def test_auth_me_rejects_anonymous_session(self):
         response = self.client.get("/api/auth/me/")

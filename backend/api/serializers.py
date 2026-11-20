@@ -38,6 +38,16 @@ class EtapeMissionSerializer(serializers.ModelSerializer):
 
 class MissionSerializer(serializers.ModelSerializer):
     etapes = EtapeMissionSerializer(many=True, read_only=True)
+    zones = serializers.PrimaryKeyRelatedField(
+        queryset=Zone.objects.all(), many=True, write_only=True, required=False,
+        allow_empty=False,
+    )
+
+    def validate(self, attrs):
+        if self.instance is not None and "zones" in attrs:
+            raise serializers.ValidationError({"zones": "Utilisez les étapes pour modifier le parcours d'une mission existante."})
+        return attrs
+
     class Meta:
         model = Mission
         fields = "__all__"

@@ -1,0 +1,78 @@
+.welcome-splash {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  display: grid;
+  min-height: 100vh;
+  min-height: 100svh;
+  place-items: center;
+  padding: 1.5rem;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(87,130,100,.18), transparent 34rem),
+    linear-gradient(145deg, rgba(16,45,37,.7), rgba(16,45,37,.8)),
+    url("../images/robot.jpg") center / cover no-repeat;
+  color: #fff;
+  text-align: center;
+  opacity: 1;
+  transition: opacity .38s ease, visibility 0s linear .38s;
+}
+
+.welcome-splash[hidden] { display: none !important; }
+.welcome-splash.is-leaving { visibility: hidden; opacity: 0; }
+.welcome-splash-content { display: grid; justify-items: center; max-width: 36rem; }
+.welcome-wave {
+  display: inline-block;
+  margin-bottom: 1.15rem;
+  color: #edf4ee;
+}
+.welcome-robot {
+  width: clamp(96px, 16vw, 130px);
+  height: clamp(88px, 15vw, 120px);
+  transform-origin: 50% 80%;
+  animation: welcome-robot-bob 1.35s ease-in-out infinite;
+}
+.welcome-robot svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 12px 18px rgba(10, 34, 27, .24));
+}
+.robot-waving-arm {
+  transform-box: fill-box;
+  transform-origin: 0% 0%;
+  animation: welcome-wave 1.35s ease-in-out infinite;
+}
+.welcome-splash h1 { margin: 0; color: #fff; font-size: clamp(2rem, 6vw, 3.4rem); font-weight: 650; letter-spacing: -.045em; line-height: 1.12; }
+.welcome-splash p { margin: .85rem 0 1.8rem; color: #d7e5d9; font-size: clamp(.95rem, 2.5vw, 1.15rem); }
+.welcome-enter {
+  min-width: 120px;
+  min-height: 44px;
+  padding: .7rem 1.3rem;
+  border: 1px solid #e4eee5;
+  border-radius: 8px;
+  background: #e4eee5;
+  color: #183d32;
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color .18s ease, transform .18s ease;
+}
+.welcome-enter:hover { transform: translateY(-1px); background: #fff; }
+.welcome-enter:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+
+@keyframes welcome-wave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(18deg); }
+  20%, 40% { transform: rotate(-10deg); }
+  50% { transform: rotate(12deg); }
+}
+@keyframes welcome-robot-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-wave, .robot-waving-arm { animation: none; }
+  .welcome-splash, .welcome-enter { transition: none; }
+}

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Guide du code — RoboAgri Kin</title>
+  <style>
+    :root { color-scheme: light; --forest: #183d32; --green: #527c62; --pale: #edf4ee; --ink: #26342d; --muted: #68766d; --line: #dce5dd; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #e9eee9; color: var(--ink); font: 15px/1.65 "Segoe UI", Arial, sans-serif; }
+    .document { width: min(900px, calc(100% - 36px)); margin: 30px auto; padding: 64px 72px; background: #fff; box-shadow: 0 12px 40px #183d3218; }
+    .cover { min-height: 500px; display: flex; flex-direction: column; justify-content: center; border-bottom: 3px solid var(--forest); }
+    .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--forest); font-weight: 700; font-size: 19px; }
+    .mark { display: inline-grid; width: 42px; height: 42px; place-items: center; border-radius: 12px; background: var(--forest); color: white; font-size: 23px; }
+    .eyebrow { margin: 58px 0 10px; color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { max-width: 650px; margin: 0; color: var(--forest); font-size: 45px; line-height: 1.12; letter-spacing: -.04em; }
+    .subtitle { max-width: 590px; margin: 20px 0 28px; color: var(--muted); font-size: 18px; }
+    .notice { margin: 24px 0; padding: 15px 18px; border-left: 4px solid var(--green); background: var(--pale); color: var(--forest); }
+    h2 { margin: 42px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); color: var(--forest); font-size: 25px; line-height: 1.25; }
+    h3 { margin: 24px 0 6px; color: var(--green); font-size: 18px; }
+    p { margin: 8px 0 12px; }
+    ul, ol { padding-left: 23px; }
+    li { margin: 4px 0; }
+    code { padding: 1px 5px; border-radius: 4px; background: #f0f3f0; color: var(--forest); font: .9em Consolas, monospace; overflow-wrap: anywhere; }
+    pre { padding: 18px; border-radius: 8px; background: #f3f6f3; color: var(--forest); font: 12px/1.6 Consolas, monospace; white-space: pre-wrap; }
+    table { width: 100%; margin: 18px 0; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 9px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--pale); color: var(--forest); }
+    .footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    @media print {
+      @page { size: A4; margin: 17mm 16mm 18mm; }
+      body { background: #fff; font-size: 10.5pt; }
+      .document { width: auto; margin: 0; padding: 0; box-shadow: none; }
+      .cover { min-height: 245mm; break-after: page; }
+      h2 { break-after: avoid; }
+      h3 { break-after: avoid; }
+      table, pre, .notice { break-inside: avoid; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+<main class="document">
+  <header class="cover">
+    <div class="brand"><span class="mark">✿</span><span>RoboAgri Kin</span></div>
+    <p class="eyebrow">Guide de lecture du projet</p>
+    <h1>Comprendre le code de RoboAgri Kin</h1>
+    <p class="subtitle">Structure, parcours des données, rôle des pages et limites actuelles de cette interface front-end.</p>
+    <div class="notice"><strong>À retenir :</strong> cette version est une démonstration. Les missions ne sont pas envoyées à un robot ou à un ESP32.</div>
+    <p>Technologies : HTML5, CSS3 et JavaScript, avec Bootstrap Icons et Plotly chargés depuis des CDN.</p>
+  </header>
+
+  <section>
+    <h2>1. Démarrer l’application</h2>
+    <p>Ouvrir <code>index.html</code> dans un navigateur pour voir la page d’accueil, puis choisir <strong>Découvrir l’application</strong> pour ouvrir <code>dashboard.html</code>. Les autres pages peuvent aussi être ouvertes directement.</p>
+    <p>Une connexion Internet est nécessaire pour charger Bootstrap, Bootstrap Icons et Plotly depuis leurs CDN. La photographie de l’accueil est hébergée sur le site FarmDroid.</p>
+  </section>
+
+  <section>
+    <h2>2. Organisation des fichiers</h2>
+    <pre>index.html          Accueil et présentation du projet
+dashboard.html      Tableau de bord de supervision
+parcelles.html      Gestion des parcelles et zones
+robot.html          État et télémétrie affichée du robot
+mesures.html        Historique et graphiques des mesures
+missions.html       Préparation locale des missions
+irrigation.html     Seuils et recommandations d’irrigation
+incidents.html      Liste des incidents
+historique.html     Journal filtrable des événements
+rapports.html       Indicateurs et graphiques de synthèse
+css/style.css       Palette, composants et adaptations responsive
+js/landing.js       Menu mobile et animations de l’accueil
+js/app.js           Navigation et affichage des pages métier
+js/api.js           Données de démonstration et stockage local
+js/data.js          Jeu de données fictives
+README.md           Présentation courte du projet
+GUIDE_CODE.md       Guide détaillé du code</pre>
+    <p>Les bibliothèques tierces minifiées ne sont pas du code métier RoboAgri Kin et ne sont donc pas commentées.</p>
+  </section>
+
+  <section>
+    <h2>3. Page d’accueil</h2>
+    <p><code>index.html</code> contient l’en-tête, les liens vers les sections, la photographie FarmDroid créditée, les quatre cartes de fonctionnalités, la présentation de la mission et le pied de page. Les boutons <strong>Découvrir l’application</strong> ouvrent <code>dashboard.html</code>, séparé de l’accueil pour préserver sa fonction de supervision.</p>
+    <p><code>js/landing.js</code> gère le menu mobile, l’année du pied de page et l’apparition des sections au défilement avec <code>IntersectionObserver</code>. Si l’API du navigateur n’est pas disponible, les sections sont affichées directement.</p>
+    <p>L’écran de bienvenue affiche un robot illustré en SVG qui fait coucou avec son bras. L’animation est définie dans <code>css/amelioration.css</code> et reste désactivée automatiquement lorsque le navigateur utilise <code>prefers-reduced-motion</code>. Le script <code>js/accueil.js</code> affiche ou masque cet écran avec le bouton <strong>Entrer</strong> et le bouton <strong>Retour</strong>.</p>
+  </section>
+
+  <section>
+    <h2>4. Tableau de bord et navigation</h2>
+    <p>Chaque page de supervision charge dans cet ordre <code>js/data.js</code>, <code>js/api.js</code>, puis <code>js/app.js</code>. Le HTML indique la vue à rendre avec <code>body[data-page]</code>. Le tableau de bord utilise <code>data-page="index"</code> ; cela ne fait pas de <code>index.html</code> la page de tableau de bord.</p>
+    <p><code>app.js</code> crée le menu latéral et le pied de page, formate les états et dates, charge les données, met à jour les éléments de la page et actualise l’affichage toutes les dix secondes. Il relie aussi les formulaires de parcelles, zones, missions et irrigation.</p>
+    <p>Les liens du menu sont définis par le tableau <code>MENU</code> en haut de <code>app.js</code>. Les identifiants HTML tels que <code>missionForm</code>, <code>graph</code> et <code>historyTable</code> relient chaque page au JavaScript : si un identifiant change, son utilisation dans le script doit être mise à jour aussi.</p>
+  </section>
+
+  <section>
+    <h2>5. Données et stockage</h2>
+    <h3><code>js/data.js</code> — données affichées</h3>
+    <p>Définit <code>DONNEES_DEMO</code>, les événements, les parcelles et zones, les missions historiques et le dernier état illustratif du robot. Les valeurs de batterie, vitesse et position sont fictives. Aucun capteur réel n’est lu.</p>
+    <h3><code>js/api.js</code> — accès aux données</h3>
+    <p>Malgré son nom, ce fichier n’effectue actuellement aucun appel HTTP ou MQTT. Ses fonctions <code>charger...</code> exposent les données de <code>data.js</code>. Les modifications sont conservées dans le <code>localStorage</code> du navigateur sous les clés :</p>
+    <ul><li><code>roboagri.parcelles</code></li><li><code>roboagri.zones</code></li><li><code>roboagri.missions</code></li><li><code>roboagri.configurations-irrigation</code></li></ul>
+    <p>Ces données restent dans le profil du navigateur et ne sont pas envoyées à un serveur. Effacer les données du site peut les supprimer.</p>
+  </section>
+
+  <section>
+    <h2>6. Fonction des pages</h2>
+    <table><thead><tr><th>Page</th><th>Fichier</th><th>Fonction principale</th></tr></thead><tbody>
+      <tr><td>Accueil</td><td><code>index.html</code></td><td>Présenter RoboAgri Kin et orienter vers l’application.</td></tr>
+      <tr><td>Tableau de bord</td><td><code>dashboard.html</code></td><td>Résumer état, mesures, parcelles, alertes et activités.</td></tr>
+      <tr><td>Parcelles</td><td><code>parcelles.html</code></td><td>Ajouter/modifier les parcelles et zones, voir l’humidité disponible.</td></tr>
+      <tr><td>Robot</td><td><code>robot.html</code></td><td>Afficher état, batterie, position, vitesse, capteurs et incidents simulés.</td></tr>
+      <tr><td>Mesures</td><td><code>mesures.html</code></td><td>Graphiques humidité/température et liste des mesures.</td></tr>
+      <tr><td>Missions</td><td><code>missions.html</code></td><td>Choisir date/heure et ordre des zones, puis conserver le plan localement.</td></tr>
+      <tr><td>Irrigation</td><td><code>irrigation.html</code></td><td>Consulter les arrosages et les mesures associées.</td></tr>
+      <tr><td>Incidents</td><td><code>incidents.html</code></td><td>Lister obstacles, pertes de communication et erreurs de mesure.</td></tr>
+      <tr><td>Historique</td><td><code>historique.html</code></td><td>Filtrer les événements par type, zone et date.</td></tr>
+      <tr><td>Rapports</td><td><code>rapports.html</code></td><td>Présenter les statistiques des données disponibles.</td></tr>
+    </tbody></table>
+    <p>Plotly rend les graphiques. Les pages sans graphique chargent néanmoins cette bibliothèque pour l’instant.</p>
+  </section>
+
+  <section>
+    <h2>7. Parcours des formulaires</h2>
+    <ul>
+      <li><strong>Parcelles et zones :</strong> <code>app.js</code> lit les formulaires, appelle <code>enregistrerParcelle</code> ou <code>enregistrerZone</code> dans <code>api.js</code>, puis actualise l’affichage.</li>
+      <li><strong>Missions :</strong> l’heure et l’ordre sélectionné sont transformés en objet. <code>enregistrerMission</code> crée un identifiant et ajoute l’objet au <code>localStorage</code>.</li>
+      <li><strong>Irrigation :</strong> la page consulte les événements d’arrosage, leur durée, leur volume et les mesures associées. Elle ne configure pas de seuil et ne décide pas si un arrosage est nécessaire.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>8. Limites avant un branchement au robot</h2>
+    <div class="notice"><strong>Le formulaire de mission ne transmet pas de mission à un ESP32.</strong> Il enregistre seulement une préparation dans le navigateur. Les missions, états, mesures, incidents, batterie et événements d’irrigation affichés sont simulés. Cette interface n’est pas connectée au robot et n’envoie aucune configuration de seuil.</div>
+    <p>Pour connecter le système, il faudra définir une interface réelle avec l’ESP32, généralement par un backend ou un broker, ainsi qu’un format de mission, des accusés de réception, des états et des règles de validation. Le capteur fournit la mesure ; le contrôleur, par exemple l’ESP32, applique le seuil configuré dans son programme et pilote la pompe. L’application pourra ensuite consulter les mesures et résultats transmis. Cette interface n’est pas un système de commande opérationnel.</p>
+  </section>
+
+  <section>
+    <h2>9. Feuille de style</h2>
+    <p><code>css/style.css</code> définit les couleurs dans <code>:root</code>, les composants communs (navigation, cartes, états, tableaux, formulaires), la grille du tableau de bord, les styles de l’accueil et les adaptations mobile.</p>
+    <p>Les animations utilisent des transitions et des media queries. La règle <code>prefers-reduced-motion</code> réduit les mouvements si l’utilisateur le demande. Les couleurs de marque principales sont <code>--vf</code> (vert forêt) et <code>--vf2</code> (vert naturel).</p>
+  </section>
+
+  <footer class="footer">RoboAgri Kin · Guide pédagogique du frontend · Les données présentées dans cette version sont fictives.</footer>
+</main>
+</body>
+</html>

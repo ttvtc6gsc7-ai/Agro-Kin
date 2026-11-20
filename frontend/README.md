@@ -1,24 +1,18 @@
-# RoboAgri-Kin – Frontend
+# RoboAgri-Kin — interface connectée
 
-Frontend du projet universitaire RoboAgri-Kin, réalisé en HTML5, CSS3,
-JavaScript, Bootstrap 5 et Plotly. Ouvrir `index.html` (connexion Internet
-requise pour les bibliothèques chargées depuis les CDN).
+Lancer Django depuis `backend` avec `venv\Scripts\python.exe manage.py runserver`, puis ouvrir http://127.0.0.1:8000/. Les pages de supervision utilisent une session Django et le cookie CSRF ; elles ne fonctionnent pas en ouverture directe `file://`.
 
-L'interface permet de gérer les parcelles et les zones, de préparer des missions,
-et de configurer les seuils et limites d'irrigation. Elle n'envoie aucune
-commande manuelle au robot. Les mesures et états du robot restent en lecture
-seule. En mode démonstration, les écritures de gestion sont stockées dans
-`localStorage` et ne sont pas transmises au robot ni à un serveur.
+- `index.html` : nouvel accueil public.
+- `dashboard.html` : tableau de bord après connexion.
+- Parcelles, cultures, zones et missions : lectures et écritures persistantes dans le back-end.
+- Robot, mesures, irrigation, incidents, historique et rapports : données du serveur actualisées toutes les dix secondes via `GET /api/supervision/` (opérateur ou administrateur).
+- `js/api.js` : session, erreurs HTTP, CSRF et adaptation des données réelles.
+- `js/app.js` : navigation, formulaires, tableaux et graphiques.
+- Bibliothèques et images locales : aucun CDN nécessaire.
+- « Documentation » : site explicatif du back-end à `/documentation/`.
 
-- `css/style.css` : charte visuelle et mise en page responsive.
-- `js/data.js` : données de démonstration explicitement signalées dans l'interface.
-- `js/api.js` : accès unique aux données de démonstration et stockage local des
-  opérations de gestion, à remplacer par des appels au backend.
-- `js/app.js` : navigation, affichage des pages, tableaux, graphiques et états;
-  actualisation périodique toutes les 10 secondes.
-- Pages : tableau de bord, parcelles et zones, surveillance du robot, mesures,
-  missions, irrigation, incidents, historique et rapports.
+La préparation d’une mission enregistre le robot choisi et ses étapes ordonnées dans une transaction unique, sans envoi automatique au robot. Les seuils, étalonnages et autorisations restent accessibles via l’administration ou les routes métier existantes.
 
-Les valeurs d'humidité sont présentées comme des valeurs brutes. Les seuils
-doivent être déterminés par étalonnage et essais. Le robot et la communication
-HTTP/MQTT/backend ne font pas partie de ce frontend.
+Batterie, position, vitesse et température ne sont pas simulées. La connexion affichée est l’état déclaré en base : aucun heartbeat matériel n’est ajouté. Une irrigation autorisée ou envoyée n’est pas comptée comme exécutée sans confirmation.
+
+L’ancien front-end est conservé dans `documentation/archives/frontend-avant-integration.zip`. Les guides et données de la maquette fournie sont dans `documentation/frontend/` et servent de référence historique.

@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.db.models import Count
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
@@ -37,8 +38,11 @@ class IncidentViewSet(HumanModelViewSet):
 class MissionViewSet(HumanModelViewSet):
     queryset = Mission.objects.select_related("robot", "createur").prefetch_related("etapes")
     serializer_class = MissionSerializer
+    @transaction.atomic
     def perform_create(self, serializer):
         serializer.instance = creer_mission(createur=self.request.user, robot=serializer.validated_data["robot"], date_mission=serializer.validated_data["date_mission"], description=serializer.validated_data.get("description", ""))
+        for ordre, zone in enumerate(serializer.validated_data.get("zones", []), start=1):
+            ajouter_etape(mission=serializer.instance, zone=zone, ordre=ordre)
     @action(detail=True, methods=["post"])
     def envoyer(self, request, pk=None):
         try: return Response(MissionSerializer(preparer_envoi_mission(mission=self.get_object())).data)
@@ -73,6 +77,22 @@ class IrrigationViewSet(viewsets.ReadOnlyModelViewSet):
 @api_view(["GET"])
 @permission_classes([IsHumanAuthenticated])
 def me(request): return Response(UserSerializer(request.user).data)
+
+
+@api_view(["GET"])
+@permission_classes([IsOperatorOrAdmin])
+def supervision(request):
+    """Instantané de consultation pour l'interface, sans identifiants secrets du robot."""
+    return Response({
+        "parcelles": ParcelleSerializer(Parcelle.objects.all(), many=True).data,
+        "zones": ZoneSerializer(Zone.objects.all(), many=True).data,
+        "cultures": CultureSerializer(Culture.objects.all(), many=True).data,
+        "robots": RobotSerializer(Robot.objects.all().order_by("id"), many=True).data,
+        "missions": MissionSerializer(Mission.objects.prefetch_related("etapes").order_by("date_mission"), many=True).data,
+        "mesures": MesureSerializer(Mesure.objects.order_by("date_heure"), many=True).data,
+        "incidents": IncidentSerializer(Incident.objects.all(), many=True).data,
+        "irrigations": IrrigationSerializer(Irrigation.objects.order_by("-date_irrigation"), many=True).data,
+    })
 
 @api_view(["GET"])
 @permission_classes([IsAdminRole])

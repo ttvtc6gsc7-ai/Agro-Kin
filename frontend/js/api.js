@@ -1,6 +1,6 @@
 // Client HTTP unique du frontend servi par Django (même origine, pas de CORS).
 // Session Django, cookie csrftoken, GET /api/auth/me/.
-// Parcelles, zones et cultures passent par l'API réelle ; les autres modules restent en démonstration.
+// Tous les écrans utilisent les données du serveur.
 
 const API_BASE = "/api";
 
@@ -40,6 +40,7 @@ const messageErreurHTTP = async response => {
 };
 
 const redirigerVersConnexion = () => {
+  if (window.deconnexionEnCours) return;
   if (typeof window === "undefined" || !window.location) return;
   if (window.location.pathname.startsWith("/connexion")) return;
   const suivant = `${window.location.pathname}${window.location.search}`;
@@ -191,181 +192,83 @@ const envoyerJSON = (chemin, method, corps) => apiFetch(chemin, {
   body: JSON.stringify(corps)
 });
 
-const CLE_LOCAL = {
-  missions: "roboagri.missions",
-  configurations: "roboagri.configurations-irrigation"
+
+// Un instantané par actualisation : toutes les vues partagent les mêmes données.
+let donneesServeur;
+let robotSelectionne = "";
+const actualiserDonnees = async () => { donneesServeur = await apiFetch('/supervision/'); };
+const zoneServeur = id => donneesServeur.zones.find(z => z.id === id);
+const nomZone = id => {
+  const zone = zoneServeur(id);
+  if (!zone) return 'Zone inconnue';
+  const parcelle = donneesServeur.parcelles.find(p => p.id === zone.parcelle);
+  return `${parcelle?.nom || 'Parcelle inconnue'} · ${zone.nom}`;
 };
-
-const lireLocal = (cle, valeursInitiales) => {
-  const contenu = localStorage.getItem(cle);
-  if (contenu === null) return structuredClone(valeursInitiales);
-  const valeurs = JSON.parse(contenu);
-  if (!Array.isArray(valeurs)) throw new Error(`Données locales invalides : ${cle}`);
-  return valeurs;
+const chargerParcelles = async () => donneesServeur.parcelles.map(p => ({
+  ...p, id: String(p.id), lieu: p.localisation,
+  zones: donneesServeur.zones.filter(z => z.parcelle === p.id).map(z => ({
+    ...z, id: String(z.id), parcelle_id: String(z.parcelle), culture_id: String(z.culture),
+    culture: donneesServeur.cultures.find(c => c.id === z.culture)?.nom || 'Culture inconnue'
+  }))
+}));
+const chargerMesures = async () => donneesServeur.mesures.map(m => ({
+  type: 'mesure_humidite', zone: nomZone(m.zone), zone_id: String(m.zone), robot_id: String(m.robot),
+  mission_id: String(m.mission), valeur: m.valeur_brute, horodatage: m.date_heure,
+  etat: m.est_valide ? 'valide' : 'invalide', detail: m.motif_invalidation || `Humidité brute : ${m.valeur_brute}`,
+  message_id: m.message_id
+}));
+const chargerMissions = async () => donneesServeur.missions.map(m => ({
+  mission_id: String(m.id), robot_id: String(m.robot), horodatage: m.date_debut || m.date_mission,
+  debut: m.date_debut, fin: m.date_fin, etat: m.statut,
+  zones: m.etapes.map(e => nomZone(e.zone)), resultat: `Transmission : ${m.etat_transmission.replaceAll('_', ' ')}`
+}));
+const chargerIncidents = async () => donneesServeur.incidents.map(i => ({
+  type: ({obstacle: 'obstacle_detecte', communication: 'perte_communication', mesure: 'erreur_mesure'})[i.type_incident] || i.type_incident,
+  zone: nomZone(donneesServeur.mesures.find(m => m.id === i.mesure)?.zone),
+  robot_id: i.robot == null ? null : String(i.robot), mission_id: i.mission == null ? null : String(i.mission),
+  horodatage: i.date_incident, detail: i.description, etat: i.statut
+}));
+const chargerIrrigations = async () => donneesServeur.irrigations.map(i => ({
+  debut: i.date_irrigation, fin: null, zone: nomZone(i.zone), mission_id: String(i.mission || ''),
+  duree: i.duree_reelle, volume: i.volume,
+  humidite_avant: donneesServeur.mesures.find(m => m.id === i.mesure_source)?.valeur_brute ?? null,
+  humidite_apres: null, temperature_avant: null, etat: i.statut
+}));
+const chargerEtatRobot = async () => {
+  const robot = donneesServeur.robots.find(r => String(r.id) === robotSelectionne) || donneesServeur.robots[0];
+  robotSelectionne = robot ? String(robot.id) : '';
+  const missions = donneesServeur.missions.filter(m => m.robot === robot?.id);
+  return {
+    id: robotSelectionne, robot_id: robot?.identifiant, nom: robot?.nom,
+    etat: robot?.etat_connexion || 'inconnu', derniere_communication: robot?.derniere_connexion,
+    probleme: robot ? (missions.some(m => m.statut === 'interrompue') ? 'Une mission est interrompue' : '') : 'Aucun robot enregistré'
+  };
 };
-
-const enregistrerLocal = (cle, valeurs) => localStorage.setItem(cle, JSON.stringify(valeurs));
-const nouvelIdentifiant = prefixe => `${prefixe}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-
-// GET /api/historique/ -> [{robot_id, mission_id, type, zone, valeur, unite,
-// horodatage, etat, message_id, ...}]. Les événements sont en lecture seule.
-const chargerHistorique = async () => messagesRobot.slice();
-
-// GET /api/mesures/ -> mêmes champs de message, avec type mesure_humidite
-// ou mesure_temperature; une valeur absente reste null et n'est pas corrigée.
-const chargerMesures = async () => messagesRobot
-  .filter(message => ["mesure_humidite", "mesure_temperature"].includes(message.type))
-  .slice();
-
-// GET /api/irrigations/ -> [{debut, fin, zone, mission_id, duree, volume,
-// humidite_avant, humidite_apres, temperature_avant, decision, etat}].
-const chargerIrrigations = async () => {
-  const debuts = messagesRobot.filter(message => message.type === "debut_arrosage");
-  const fins = messagesRobot.filter(message => message.type === "fin_arrosage");
-  const irrigations = debuts.map(debut => {
-    const fin = fins.find(message => message.mission_id === debut.mission_id &&
-      message.zone === debut.zone && message.horodatage >= debut.horodatage);
-    return {
-      debut: debut.horodatage,
-      fin: fin?.horodatage || null,
-      zone: debut.zone,
-      mission_id: debut.mission_id,
-      duree: fin?.duree ?? null,
-      volume: fin?.volume ?? debut.volume ?? null,
-      humidite_avant: debut.humidite_avant ?? null,
-      humidite_apres: fin?.humidite_apres ?? null,
-      temperature_avant: debut.temperature_avant ?? null,
-      decision: "effectue",
-      motif: debut.motif || "Arrosage rapporté par le robot",
-      etat: fin ? "terminee" : "en_cours"
-    };
+const chargerHistorique = async () => {
+  const [mesures, incidents] = await Promise.all([chargerMesures(), chargerIncidents()]);
+  const missions = donneesServeur.missions.flatMap(m => [
+    ...(m.date_debut ? [{type: 'demarrage_mission', horodatage: m.date_debut}] : []),
+    ...(m.date_fin ? [{type: 'fin_mission', horodatage: m.date_fin}] : [])
+  ].map(e => ({...e, mission_id: String(m.id), robot_id: String(m.robot), etat: m.statut})));
+  const etapes = donneesServeur.missions.flatMap(m => m.etapes.filter(e => e.date_debut).map(e => ({
+    type: 'arrivee_zone', horodatage: e.date_debut, zone: nomZone(e.zone), mission_id: String(m.id), robot_id: String(m.robot), etat: e.statut
+  })));
+  const irrigations = donneesServeur.irrigations.map(i => ({
+    type: 'operation_irrigation', horodatage: i.date_irrigation, zone: nomZone(i.zone),
+    mission_id: String(i.mission || ''), detail: `Irrigation : ${i.statut.replaceAll('_', ' ')}`, etat: i.statut
+  }));
+  return [...mesures, ...incidents, ...missions, ...etapes, ...irrigations];
+};
+const enregistrerParcelle = p => envoyerJSON(p.id ? `/parcelles/${Number(p.id)}/` : '/parcelles/', p.id ? 'PUT' : 'POST', {
+  nom: p.nom, localisation: p.lieu, superficie: p.superficie
+});
+const enregistrerZone = z => envoyerJSON(z.id ? `/zones/${Number(z.id)}/` : '/zones/', z.id ? 'PUT' : 'POST', {
+  nom: z.nom, parcelle: Number(z.parcelle_id), culture: Number(z.culture)
+});
+const enregistrerCulture = c => envoyerJSON('/cultures/', 'POST', c);
+const enregistrerMission = async m => {
+  const result = await envoyerJSON('/missions/', 'POST', {
+    robot: Number(m.robot), date_mission: m.horodatage, zones: m.zones.map(Number)
   });
-  const refus = messagesRobot.filter(message => message.type === "erreur_mesure").map(message => ({
-    debut: message.horodatage,
-    fin: null,
-    zone: message.zone,
-    mission_id: message.mission_id,
-    duree: null,
-    volume: null,
-    humidite_avant: null,
-    humidite_apres: null,
-    temperature_avant: null,
-    decision: "interdit",
-    motif: "Arrosage interdit : mesure invalide",
-    etat: "interdit"
-  }));
-  return [...irrigations, ...refus].sort((a, b) => b.debut.localeCompare(a.debut));
-};
-
-// GET /api/missions/ -> [{mission_id, horodatage, fin, zones: string[],
-// etat: planifiee|en_cours|terminee|interrompue, resultat}].
-const chargerMissions = async () => [
-  ...donneesMissions.map(mission => ({ ...mission, zones: [...mission.zones] })),
-  ...lireLocal(CLE_LOCAL.missions, [])
-];
-
-// GET /api/incidents/ -> messages robot de type obstacle, communication ou mesure.
-const chargerIncidents = async () => messagesRobot
-  .filter(message => ["obstacle_detecte", "perte_communication", "erreur_mesure"].includes(message.type))
-  .slice();
-
-// GET /api/robot/etat/ -> {robot_id, etat, derniere_communication, probleme}.
-const chargerEtatRobot = async () => ({ ...donneesEtatRobot });
-
-// GET /api/cultures/ -> [{id, nom, description, type_culture}].
-const chargerCultures = async () => extraireListe(await apiFetch("/cultures/"));
-
-// GET /api/zones/ -> [{id, nom, parcelle, culture}] (clés étrangères numériques).
-const chargerZones = async () => extraireListe(await apiFetch("/zones/"));
-
-// GET /api/parcelles/ composé côté client : chaque parcelle reçoit ses zones
-// (filtre zone.parcelle) et le nom de culture résolu via /api/cultures/.
-const chargerParcelles = async () => {
-  const [parcelles, zones, cultures] = await Promise.all([
-    apiFetch("/parcelles/"),
-    chargerZones(),
-    chargerCultures()
-  ]);
-  chargerParcelles.dernieresCultures = cultures;
-  const parCulture = new Map(cultures.map(culture => [Number(culture.id), culture]));
-  return extraireListe(parcelles).map(parcelle => ({
-    ...parcelle,
-    zones: zones.filter(zone => Number(zone.parcelle) === Number(parcelle.id)).map(zone => ({
-      ...zone,
-      cultureNom: parCulture.get(Number(zone.culture))?.nom || "Culture inconnue"
-    }))
-  }));
-};
-
-// POST /api/parcelles/ ou PUT /api/parcelles/{id}/ {nom, superficie, localisation}.
-const enregistrerParcelle = async parcelle => {
-  const corps = {
-    nom: parcelle.nom,
-    superficie: parcelle.superficie,
-    localisation: parcelle.localisation
-  };
-  if (parcelle.id != null && parcelle.id !== "") {
-    return envoyerJSON(`/parcelles/${Number(parcelle.id)}/`, "PUT", corps);
-  }
-  return envoyerJSON("/parcelles/", "POST", corps);
-};
-
-// POST /api/zones/ ou PUT /api/zones/{id}/ {nom, parcelle, culture} (ids numériques).
-const enregistrerZone = async zone => {
-  const corps = {
-    nom: zone.nom,
-    parcelle: Number(zone.parcelle),
-    culture: Number(zone.culture)
-  };
-  if (zone.id != null && zone.id !== "") {
-    return envoyerJSON(`/zones/${Number(zone.id)}/`, "PUT", corps);
-  }
-  return envoyerJSON("/zones/", "POST", corps);
-};
-
-// POST /api/cultures/ ou PUT /api/cultures/{id}/ {nom, type_culture, description}.
-const enregistrerCulture = async culture => {
-  const corps = {
-    nom: culture.nom,
-    type_culture: culture.type_culture,
-    description: culture.description || ""
-  };
-  if (culture.id != null && culture.id !== "") {
-    return envoyerJSON(`/cultures/${Number(culture.id)}/`, "PUT", corps);
-  }
-  return envoyerJSON("/cultures/", "POST", corps);
-};
-
-// POST /api/missions/ {horodatage, zones: string[]}; état initial planifiee.
-// Le backend recevra cette préparation; aucun ordre manuel au robot n'est émis ici.
-const enregistrerMission = async mission => {
-  const missions = lireLocal(CLE_LOCAL.missions, []);
-  const valeur = {
-    ...mission,
-    mission_id: mission.mission_id || nouvelIdentifiant("M"),
-    zones: [...mission.zones],
-    fin: null,
-    etat: "planifiee",
-    resultat: "Mission planifiée (démonstration locale)"
-  };
-  missions.push(valeur);
-  enregistrerLocal(CLE_LOCAL.missions, missions);
-  return valeur;
-};
-
-// GET /api/configurations-irrigation/ -> [{zone, seuil_humidite,
-// duree_max_secondes, volume_max_litres?}].
-const chargerConfigurationsIrrigation = async () =>
-  lireLocal(CLE_LOCAL.configurations, []);
-
-// POST/PUT /api/configurations-irrigation/ {zone, seuil_humidite,
-// duree_max_secondes, volume_max_litres?}; renvoie la configuration enregistrée.
-const enregistrerConfigurationIrrigation = async configuration => {
-  const configurations = lireLocal(CLE_LOCAL.configurations, []);
-  const valeur = { ...configuration };
-  const index = configurations.findIndex(item => item.zone === valeur.zone);
-  if (index < 0) configurations.push(valeur);
-  else configurations[index] = valeur;
-  enregistrerLocal(CLE_LOCAL.configurations, configurations);
-  return valeur;
+  return {...result, mission_id: result.id};
 };

@@ -1,80 +1,54 @@
-# RoboAgri-Kin — backend
+# RoboAgri-Kin
 
-Backend Django de supervision d’un robot agricole : planification de missions, mesures d’humidité, recommandations et contrôle d’irrigation. Le firmware ESP32 et le frontend ne font pas partie de ce backend.
+Application Django de supervision d’un robot agricole, avec le nouveau front-end HTML/CSS/JavaScript intégré : parcelles, cultures, zones, préparation de missions, mesures, irrigations, incidents et rapports.
 
-## Architecture
+## Démarrage (Windows PowerShell)
 
-- `parcelles` : cultures, parcelles, zones et seuils d’irrigation.
-- `missions` : robots, missions et étapes.
-- `mesures` : étalonnages et réception fiable des mesures.
-- `irrigation` : recommandations, autorisations et résultats d’exécution.
-- `incidents` : traçabilité des anomalies.
-- `api` : API REST Django REST Framework, authentification et permissions.
+Depuis le dossier `backend`, pour une première installation :
 
-Technologies : Python, Django 6.1, Django REST Framework 3.18 et SQLite pour le développement.
+```powershell
+py -m venv venv
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+.\venv\Scripts\python.exe manage.py migrate
+.\venv\Scripts\python.exe manage.py creer_groupes
+.\venv\Scripts\python.exe manage.py creer_compte operateur --password "VotreMotDePasse" --role Operateur
+```
 
-## Installation et démarrage (Windows PowerShell)
+Démarrage habituel, toujours depuis `backend` :
 
-    cd backend
-    py -m venv venv
-    .\venv\Scripts\Activate.ps1
-    pip install -r requirements.txt
-    python manage.py migrate
-    python manage.py creer_groupes
-    python manage.py creer_compte operateur-demo --password "ChoisirUnMotDePasseFort" --role Operateur
-    python manage.py runserver
+```powershell
+.\venv\Scripts\python.exe manage.py runserver
+```
 
-Pour administrer les données à l’écran, créer d’abord un superutilisateur :
+Ouvrir http://127.0.0.1:8000/ puis « Découvrir l’application ». Utiliser un compte du groupe `Operateur`, `Administrateur` ou un superutilisateur pour la supervision. L’accueil est public ; les écrans de supervision demandent une connexion.
 
-    python manage.py createsuperuser
+Créer un administrateur avec `venv\Scripts\python.exe manage.py createsuperuser`. L’administration `/admin/` permet notamment de configurer les robots, seuils et étalonnages.
 
-Les variables de production (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` et la base de données) doivent être configurées hors du code avant un déploiement.
+## Données et connexion
 
-## Authentification et rôles
+Le navigateur utilise la session Django et le CSRF ; HTTP Basic et JWT ne sont pas activés. Le frontend et l’API partagent la même origine. Les bibliothèques et images sont locales.
 
-Les humains utilisent une session Django (admin) ou HTTP Basic Auth avec leur nom d’utilisateur et mot de passe. Il n’existe volontairement pas de jeton humain ni de route de connexion API dans cette version. Vérification : `GET /api/auth/me/`.
+`GET /api/supervision/` fournit les données réelles. Les formulaires écrivent dans `/api/cultures/`, `/api/parcelles/`, `/api/zones/` et `/api/missions/`. La création d’une mission accepte `robot`, `date_mission` et une liste `zones` ordonnée ; la mission et ses étapes sont enregistrées ensemble, sans envoi automatique au robot.
 
-Les robots ne sont pas des utilisateurs Django. Chaque robot possède un identifiant UUID et un jeton distinct, stocké uniquement sous forme de hachage. Les requêtes robot portent les en-têtes `X-Robot-Id` et `X-Robot-Token`.
+Les robots utilisent `X-Robot-Id` et `X-Robot-Token` sur les routes `/api/robot/`. L’intégration ne remplace pas le firmware et ne prouve pas une communication avec un robot physique. Les valeurs absentes ne sont pas inventées, et la connexion affichée vient de l’état déclaré en base.
 
-- `Administrateur` : gestion des robots et accès opérateur.
-- `Operateur` : gestion agronomique, missions, étalonnages et autorisations d’irrigation.
+## Documentation et sauvegarde
 
-## Endpoints principaux
+- Menu « Documentation » : site explicatif du back-end à `/documentation/`, après connexion.
+- Sources du site : `documentation/backend/`. Régénération depuis la racine : `backend\venv\Scripts\python.exe documentation/backend/build.py`.
+- Description de l’interface : `frontend/README.md`.
+- Ancien front-end : `documentation/archives/frontend-avant-integration.zip`.
+- Guides de la maquette fournie : `documentation/frontend/` (documents historiques).
+- Le dossier original `Explication Backend/` est conservé.
 
-Toutes les routes commencent par `/api/`.
+## Contrôles
 
-| Domaine | Routes |
-|---|---|
-| Humain | `GET auth/me/`, `GET utilisateurs/`, `GET tableau-de-bord/`, `GET rapports/` |
-| Parcelles | CRUD `cultures/`, `parcelles/`, `zones/`, `seuils/` |
-| Robot et missions | CRUD `robots/`, `missions/`, `etapes/`; `POST missions/{id}/envoyer/` |
-| Mesures | CRUD `etalonnages/`; `POST robot/mesures/` |
-| Irrigation | `GET recommandations/`, `POST recommandations/{id}/autoriser/`, `GET irrigations/`, `POST irrigations/{id}/envoyer/` |
-| Robot HTTP | `GET robot/missions/`, `GET robot/missions/{id}/etapes/`, `POST robot/missions/{id}/accuse/`, `GET robot/irrigations/`, `POST robot/irrigations/{id}/resultat/` |
-| Incidents | `GET incidents/` |
+Depuis `backend` :
 
-## Exemples HTTP
+```powershell
+.\venv\Scripts\python.exe manage.py test
+.\venv\Scripts\python.exe manage.py check
+.\venv\Scripts\python.exe manage.py makemigrations --check --dry-run
+```
 
-Utilisateurs humains (Basic Auth) :
-
-    curl -u operateur-demo:ChoisirUnMotDePasseFort http://127.0.0.1:8000/api/auth/me/
-    curl -u operateur-demo:ChoisirUnMotDePasseFort -H "Content-Type: application/json" -d '{"nom":"Parcelle Nord","superficie":"2.50","localisation":"UCC"}' http://127.0.0.1:8000/api/parcelles/
-
-Robot (remplacer les valeurs d’exemple) :
-
-    curl -H "X-Robot-Id: UUID_DU_ROBOT" -H "X-Robot-Token: JETON_DU_ROBOT" http://127.0.0.1:8000/api/robot/missions/
-    curl -X POST -H "Content-Type: application/json" -H "X-Robot-Id: UUID_DU_ROBOT" -H "X-Robot-Token: JETON_DU_ROBOT" -d '{"robot":1,"mission":1,"zone":1,"valeur_brute":"430","date_heure":"2026-11-09T10:00:00Z","message_id":"00000000-0000-0000-0000-000000000001"}' http://127.0.0.1:8000/api/robot/mesures/
-
-Le jeton brut ne doit jamais être placé dans les journaux, le dépôt Git ou un fichier de configuration partagé.
-
-## Tests et contrôles
-
-    python manage.py test
-    python manage.py check
-    python manage.py makemigrations --check --dry-run
-
-## Limites connues
-
-- L’échange HTTP est testé au niveau Django, pas avec un ESP32 physique ni un réseau réel.
-- SQLite et les réglages actuels sont destinés au développement.
-- Les comptes utilisateurs sont gérés par Django ; une interface de connexion API dédiée n’est pas fournie.
+Les réglages actuels sont destinés au développement local. Les seuils, étalonnages, autorisations et envois restent disponibles via l’administration ou l’API métier existante. La nouvelle interface prépare les missions et consulte les opérations.

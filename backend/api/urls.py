@@ -16,6 +16,7 @@ router.register("irrigations", views.IrrigationViewSet)
 router.register("incidents", views.IncidentViewSet)
 
 urlpatterns = [
+    path("supervision/", views.supervision),
     path("auth/me/", views.me), path("utilisateurs/", views.users), path("tableau-de-bord/", views.dashboard), path("rapports/", views.rapport),
     path("robot/mesures/", views.robot_mesures), path("robot/missions/", views.robot_missions),
     path("robot/missions/<int:mission_id>/etapes/", views.robot_etapes_mission), path("robot/missions/<int:mission_id>/accuse/", views.robot_accuse_mission),

@@ -10,6 +10,7 @@ from django.views.decorators.http import require_GET
 
 PAGES_FRONTEND = frozenset({
     "index",
+    "dashboard",
     "parcelles",
     "robot",
     "mesures",
@@ -20,7 +21,7 @@ PAGES_FRONTEND = frozenset({
     "rapports",
 })
 
-DOSSIERS_STATIQUES = frozenset({"css", "js", "vendor"})
+DOSSIERS_STATIQUES = frozenset({"css", "js", "vendor", "images"})
 
 
 def _fichier_sous(racine, chemin_relatif):
@@ -58,4 +59,21 @@ def fichier_frontend(request, chemin, dossier):
     if dossier not in DOSSIERS_STATIQUES:
         raise Http404("Dossier interdit.")
     fichier = _fichier_sous(settings.FRONTEND_DIR / dossier, chemin)
+    return FileResponse(fichier.open("rb"))
+
+
+@require_GET
+@ensure_csrf_cookie
+def accueil(request):
+    fichier = _fichier_sous(settings.FRONTEND_DIR, "index.html")
+    return FileResponse(fichier.open("rb"), content_type="text/html; charset=utf-8")
+
+
+@login_required
+@require_GET
+def documentation(request, chemin="index.html"):
+    # Seuls les fichiers du site explicatif sont exposés, jamais les scripts Python.
+    if chemin not in {"index.html", "style.css", "script.js", "verification.html"}:
+        raise Http404("Document introuvable.")
+    fichier = _fichier_sous(settings.BASE_DIR.parent / "documentation" / "backend", chemin)
     return FileResponse(fichier.open("rb"))

@@ -40,7 +40,7 @@ CSRF_TRUSTED_ORIGINS = [
 FRONTEND_DIR = BASE_DIR.parent / "frontend"
 
 LOGIN_URL = "/connexion/"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/dashboard.html"
 LOGOUT_REDIRECT_URL = "/connexion/"
 
 # HTTP local (PC + Wi-Fi) : les cookies ne doivent pas exiger HTTPS.

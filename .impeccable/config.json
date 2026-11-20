@@ -1,0 +1,41 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-11-20T09:09:21.044Z",
+        "reason": "Agent review: preserve the font stack supplied in the requested frontend; this task is integration with minor refinements, not a typography redesign."
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "frontend/dashboard.html",
+          "frontend/historique.html",
+          "frontend/incidents.html",
+          "frontend/index.html",
+          "frontend/irrigation.html",
+          "frontend/mesures.html",
+          "frontend/missions.html",
+          "frontend/parcelles.html",
+          "frontend/rapports.html",
+          "frontend/robot.html"
+        ],
+        "createdAt": "2026-11-20T09:09:41.944Z",
+        "reason": "Agent review of supplied CSS and desktop/mobile screenshots: the gradient belongs only to the light landing-page surface, not a dark page. On supervision pages the landing-page selector does not apply. Preserve the supplied visual identity."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "frontend/index.html"
+        ],
+        "createdAt": "2026-11-20T09:09:42.272Z",
+        "reason": "Agent review: mission-stat has 1.4rem left padding alongside its desktop border; mobile removes the left border and adds .8rem top padding alongside its top border. The detector combines mutually exclusive responsive styles."
+      }
+    ]
+  }
+}
