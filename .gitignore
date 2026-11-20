@@ -5,6 +5,9 @@ __pycache__/
 db.sqlite3
 .env
 
+# Base et captures isolées utilisées pendant l'intégration du frontend
+/tmp/integration/
+
 # ?diteur / syst?me
 .vscode/
 Thumbs.db
