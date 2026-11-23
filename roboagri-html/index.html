@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RoboAgri Kin — La précision au service des cultures</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23183d32'/><text x='50' y='68' font-size='56' text-anchor='middle'>🌱</text></svg>">
+  <meta name="description" content="Découvrez RoboAgri Kin, une solution de supervision intelligente pour accompagner le suivi et l’entretien des cultures.">
+  <meta name="theme-color" content="#183d32">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/amelioration.css" rel="stylesheet">
+</head>
+<body class="landing-page">
+  <section class="welcome-splash" id="welcomeSplash" role="dialog" aria-modal="true" aria-label="Bienvenue sur RoboAgri-Kin">
+    <div class="welcome-splash-content">
+      <span class="welcome-wave welcome-robot" aria-hidden="true">
+        <svg viewBox="0 0 120 110" role="img">
+          <g class="robot-antenna">
+            <path d="M60 20V10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="60" cy="7" r="6" fill="#dce9de" stroke="currentColor" stroke-width="4"/>
+          </g>
+          <rect x="22" y="24" width="76" height="58" rx="18" fill="#edf4ee" stroke="currentColor" stroke-width="5"/>
+          <rect x="33" y="36" width="54" height="34" rx="12" fill="#183d32"/>
+          <circle cx="48" cy="51" r="5" fill="#dce9de"/>
+          <circle cx="72" cy="51" r="5" fill="#dce9de"/>
+          <path d="M50 63c5 4 15 4 20 0" fill="none" stroke="#dce9de" stroke-width="4" stroke-linecap="round"/>
+          <rect x="40" y="82" width="40" height="17" rx="8" fill="#edf4ee" stroke="currentColor" stroke-width="5"/>
+          <path d="M31 91H13" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+          <g class="robot-waving-arm">
+            <path d="M89 91l18 12" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+            <path d="M107 103l7-8M107 103l10 1M107 103l3 9" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </span>
+      <h1>Bienvenue sur RoboAgri-Kin</h1>
+      <p>Supervision de l’arrosage automatique</p>
+      <button class="welcome-enter" id="welcomeEnter" type="button">Entrer</button>
+    </div>
+  </section>
+  <button class="landing-welcome-button" id="reopenWelcome" type="button" aria-label="Réafficher l’écran de bienvenue">
+    <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
+    <span>Retour</span>
+  </button>
+  <!-- Page de présentation : ses animations sont gérées par landing.js, indépendamment du tableau de bord. -->
+  <header class="landing-header" id="top">
+    <a class="landing-brand" href="index.html" aria-label="RoboAgri Kin, accueil">
+      <span class="brand-mark"><i class="bi bi-flower1" aria-hidden="true"></i></span>
+      <span>RoboAgri <strong>Kin</strong></span>
+    </a>
+    <button class="landing-menu-toggle" id="landingMenuToggle" type="button" aria-expanded="false" aria-controls="landingNav" aria-label="Ouvrir la navigation">
+      <i class="bi bi-list" aria-hidden="true"></i>
+    </button>
+    <nav class="landing-nav" id="landingNav" aria-label="Navigation principale">
+      <a href="#approche">Notre approche</a>
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a class="landing-nav-cta" href="dashboard.html">Accéder à l’application <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+    </nav>
+  </header>
+
+  <main class="landing-main">
+    <section class="hero-section" aria-labelledby="heroTitle">
+      <div class="hero-copy">
+        <p class="eyebrow hero-reveal"><span class="eyebrow-dot"></span> Robotique agricole · Kinshasa</p>
+        <h1 id="heroTitle" class="hero-reveal hero-title" tabindex="-1"><span class="hero-title-message" id="heroHeadlineMessage">Et si la technologie prenait soin de vos cultures&nbsp;?</span></h1>
+        <p class="hero-description hero-reveal hero-message" id="heroMessage" aria-live="polite" aria-atomic="true">Découvrez RoboAgri Kin, une nouvelle approche de la supervision agricole intelligente. Un robot conçu pour surveiller vos cultures et intervenir avec précision là où elles en ont besoin.</p>
+        <div class="hero-actions hero-reveal">
+          <a class="button-primary" href="dashboard.html">Découvrir l'application <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+          <a class="text-link" href="#fonctionnalites">Explorer les fonctionnalités <i class="bi bi-arrow-down" aria-hidden="true"></i></a>
+        </div>
+        <p class="hero-footnote hero-reveal"><i class="bi bi-info-circle" aria-hidden="true"></i> Démonstration universitaire · données simulées</p>
+      </div>
+      <figure class="hero-visual hero-reveal" aria-labelledby="heroVisualCaption">
+        <img src="images.jpg" alt="Robot agricole travaillant un champ au lever du soleil" fetchpriority="high">
+        <div class="hero-image-shade" aria-hidden="true"></div>
+        <figcaption class="hero-image-caption">
+          <span class="caption-icon"><i class="bi bi-broadcast-pin" aria-hidden="true"></i></span>
+          <span><strong>Observer. Comprendre. Agir.</strong><small>La précision au rythme du vivant.</small></span>
+        </figcaption>
+      </figure>
+      <div class="hero-bottom-note"><span>01</span><span class="note-line"></span><span>Une agriculture plus précise commence ici.</span></div>
+    </section>
+
+    <section class="features-section landing-section" id="fonctionnalites" aria-labelledby="featuresTitle">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Une technologie attentive</p>
+        <h2 id="featuresTitle">L’intelligence au cœur <em>de vos champs.</em></h2>
+        <p>Une supervision claire pour mieux comprendre les besoins de chaque zone et suivre les opérations du robot.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card reveal">
+          <span class="feature-icon"><i class="bi bi-moisture" aria-hidden="true"></i></span>
+          <p class="feature-number">01 / OBSERVER</p>
+          <h3>Surveillance intelligente</h3>
+          <p>Suivez les mesures d’humidité du sol et consultez les informations remontées pour chaque zone.</p>
+          <a href="mesures.html">Voir les mesures <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-icon"><i class="bi bi-droplet-half" aria-hidden="true"></i></span>
+          <p class="feature-number">02 / PRÉCISER</p>
+          <h3>Intervention ciblée</h3>
+          <p>Repérez les zones qui pourraient nécessiter un arrosage grâce aux mesures et seuils configurés.</p>
+          <a href="irrigation.html">Voir le suivi d’irrigation <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-icon"><i class="bi bi-radar" aria-hidden="true"></i></span>
+          <p class="feature-number">03 / SÉCURISER</p>
+          <h3>Détection des obstacles</h3>
+          <p>Consultez les alertes et incidents signalés pendant les déplacements et les missions du robot.</p>
+          <a href="incidents.html">Consulter les alertes <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-icon"><i class="bi bi-activity" aria-hidden="true"></i></span>
+          <p class="feature-number">04 / SUIVRE</p>
+          <h3>Suivi des opérations</h3>
+          <p>Retrouvez l’état, la progression et les événements associés aux activités observées.</p>
+          <a href="robot.html">Suivre l’état du robot <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+        </article>
+      </div>
+    </section>
+
+    <section class="mission-section landing-section reveal" id="approche" aria-labelledby="missionTitle">
+      <div class="mission-symbol" aria-hidden="true"><i class="bi bi-flower2"></i><span></span></div>
+      <div class="mission-copy">
+        <p class="eyebrow">Notre mission</p>
+        <h2 id="missionTitle">Votre robot, au service <em>de vos cultures.</em></h2>
+        <p>RoboAgri Kin imagine une agriculture où la technologie aide à prendre des décisions plus précises. La plateforme rassemble les observations, les missions et les alertes dans une interface pensée pour rendre le suivi agricole plus clair.</p>
+        <p class="mission-note"><i class="bi bi-shield-check" aria-hidden="true"></i> Projet universitaire : les données affichées sont simulées.</p>
+        <a class="button-light" href="dashboard.html">Découvrir l’application <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="mission-stat"><strong>Une zone</strong><span>à la fois, avec attention.</span><i class="bi bi-arrow-up-right" aria-hidden="true"></i></div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <a class="landing-brand" href="index.html">
+      <span class="brand-mark"><i class="bi bi-flower1" aria-hidden="true"></i></span>
+      <span>RoboAgri <strong>Kin</strong></span>
+    </a>
+    <p>La technologie au rythme de la nature.</p>
+    <span>© <span id="currentYear"></span> RoboAgri Kin · Projet de démonstration</span>
+  </footer>
+  <script src="js/landing.js"></script>
+  <script src="js/accueil.js"></script>
+</body>
+</html>

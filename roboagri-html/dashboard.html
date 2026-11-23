@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#183d32">
+<title>Tableau de bord – RoboAgri Kin</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23183d32'/><text x='50' y='68' font-size='56' text-anchor='middle'>🌱</text></svg>">
+<meta name="description" content="Suivez en un coup d’œil les mesures, l’activité du robot, les parcelles et les alertes RoboAgri Kin.">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet"></head>
+<body data-page="index">
+<!-- Cette page réutilise la vue "index" d'app.js; la page d'accueil du site est index.html. -->
+<main>
+<div class="page-heading">
+  <div><p class="eyebrow">Vue d’ensemble</p><h1>Tableau de bord</h1><p class="page-intro">Un aperçu des observations et des opérations de RoboAgri Kin.</p></div>
+  <a class="button-primary button-compact" href="missions.html"><i class="bi bi-plus-lg" aria-hidden="true"></i> Préparer une mission</a>
+</div>
+<div class="badge-demo" role="note"><i class="bi bi-info-circle" aria-hidden="true"></i> <strong>Démonstration</strong> : données simulées, aucune connexion matérielle au robot.</div>
+<section class="dashboard-kpis" aria-label="Indicateurs principaux">
+  <article class="carte kpi dashboard-kpi"><div class="kpi-top"><span class="kpi-icon"><i class="bi bi-wifi" aria-hidden="true"></i></span><span class="kpi-label">CONNEXION</span></div><div class="mt-2" id="etat"></div><div class="kpi-foot" id="derniereCom">Dernière communication : —</div></article>
+  <article class="carte kpi dashboard-kpi"><div class="kpi-top"><span class="kpi-icon"><i class="bi bi-battery-half" aria-hidden="true"></i></span><span class="kpi-label">BATTERIE · SIMULÉE</span></div><div class="val" id="batteryLevel">—</div><div class="kpi-foot">Valeur de démonstration</div></article>
+  <article class="carte kpi dashboard-kpi"><div class="kpi-top"><span class="kpi-icon"><i class="bi bi-moisture" aria-hidden="true"></i></span><span class="kpi-label">HUMIDITÉ MOYENNE</span></div><div class="val" id="humMoy">—</div><div class="kpi-foot">Valeur brute des mesures valides</div></article>
+  <article class="carte kpi dashboard-kpi"><div class="kpi-top"><span class="kpi-icon"><i class="bi bi-check2-circle" aria-hidden="true"></i></span><span class="kpi-label">MISSIONS TERMINÉES</span></div><div class="val" id="nbMissions">—</div><div class="kpi-foot">D’après l’historique disponible</div></article>
+</section>
+<section class="dashboard-grid">
+  <article class="carte dashboard-chart-card"><div class="card-heading"><div><p class="eyebrow">Tendance</p><h2>Évolution de l’humidité</h2></div><a class="subtle-link" href="mesures.html">Toutes les mesures <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div><div class="chart" id="graph"></div></article>
+  <article class="carte robot-summary"><div class="card-heading"><div><p class="eyebrow">État du robot</p><h2>Activité observée</h2></div><span class="robot-orbit" aria-hidden="true"><i class="bi bi-robot"></i></span></div><div class="robot-summary-state" id="robotSummary"></div><div class="robot-summary-details"><span><i class="bi bi-geo-alt" aria-hidden="true"></i> Position signalée</span><strong id="robotPosition">—</strong><span><i class="bi bi-speedometer2" aria-hidden="true"></i> Vitesse simulée</span><strong id="robotSpeed">—</strong></div><a class="subtle-link" href="robot.html">Détails du robot <i class="bi bi-arrow-right" aria-hidden="true"></i></a></article>
+</section>
+<section class="dashboard-grid dashboard-grid-lower">
+  <article class="carte"><div class="card-heading"><div><p class="eyebrow">Terrain</p><h2>Parcelles suivies</h2></div><a class="subtle-link" href="parcelles.html">Gérer les parcelles <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div><div class="zones-overview" id="zonesOverview"></div></article>
+  <article class="carte"><div class="card-heading"><div><p class="eyebrow">À surveiller</p><h2>Alertes récentes</h2></div><a class="subtle-link" href="incidents.html">Voir les alertes <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div><div id="alertOverview"></div></article>
+</section>
+<section class="carte recent-activity"><div class="card-heading"><div><p class="eyebrow">Journal</p><h2>Activités récentes</h2></div><a class="subtle-link" href="historique.html">Ouvrir l’historique <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div><div id="activites"></div></section>
+</main>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script><script src="js/api.js"></script><script src="js/app.js"></script></body></html>
