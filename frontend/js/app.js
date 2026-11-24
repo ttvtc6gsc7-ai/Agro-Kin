@@ -3,6 +3,7 @@
 const MENU = [
   ["index", "grid", "Tableau de bord", "dashboard.html"],
   ["parcelles", "map", "Mes parcelles", "parcelles.html"],
+  ["pilotage", "controller", "Pilotage du robot et autres", "pilotage.html"],
   ["robot", "robot", "État du robot", "robot.html"],
   ["mesures", "droplet", "Humidité du sol", "mesures.html"],
   ["missions", "flag", "Missions et opérations", "missions.html"],
@@ -497,6 +498,10 @@ const demarrer = async () => {
     const utilisateur = await verifierSession();
     if (!utilisateur) return;
     $('sessionUser').textContent = utilisateur.username;
+    if (page === "pilotage") {
+      $("appFooter").hidden = true;
+      return;
+    }
     await refreshPage();
     minuterieActualisation = window.setInterval(refreshPage, 10000);
   } catch (error) { showLoadError(error); }

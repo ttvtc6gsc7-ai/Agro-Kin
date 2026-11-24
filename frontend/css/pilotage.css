@@ -1,0 +1,27 @@
+.commandes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 26rem;
+  margin: 2rem auto;
+  gap: .5rem;
+}
+.commandes button {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  min-height: 5rem;
+  padding: .25rem;
+  background: var(--vcb);
+  color: var(--vf);
+  border: 1px solid var(--bord);
+  border-radius: .85rem;
+  font-weight: 650;
+  touch-action: none;
+  user-select: none;
+}
+.commandes i { font-size: 1.4rem; }
+.commandes [data-move="F"], .commandes [data-move="B"] { grid-column: 2; }
+.commandes [data-move="L"] { grid-column: 1; }
+.commandes [aria-pressed="true"] { background: var(--vf); color: white; }
+.commandes #stop { background: #982f2a; color: white; }
+.commandes button:disabled { opacity: .48; }

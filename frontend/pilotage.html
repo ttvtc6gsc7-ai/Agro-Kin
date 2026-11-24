@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pilotage du robot et autres – RoboAgri-Kin</title>
+  <link rel="stylesheet" href="vendor/bootstrap.min.css"><link rel="stylesheet" href="vendor/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/pilotage.css">
+</head>
+<body data-page="pilotage">
+<main>
+  <h1 class="h3 mb-4">Pilotage du robot et autres</h1>
+  <div class="row g-4 align-items-start">
+    <div class="col-xl-7"><section class="carte"><h2>Déplacement manuel</h2>
+      <p>Maintenez une direction pour rouler. Relâchez pour demander l’arrêt.</p>
+      <div class="commandes" aria-label="Directions">
+        <button disabled data-move="F"><i class="bi bi-arrow-up"></i>Avancer</button>
+        <button disabled data-move="L"><i class="bi bi-arrow-left"></i>Gauche</button>
+        <button disabled id="stop"><i class="bi bi-stop-fill"></i>Arrêter</button>
+        <button disabled data-move="R"><i class="bi bi-arrow-right"></i>Droite</button>
+        <button disabled data-move="B"><i class="bi bi-arrow-down"></i>Reculer</button>
+      </div>
+      <p role="status" id="commandeInfo" class="mb-0">Aucune commande envoyée.</p>
+    </section></div>
+    <div class="col-xl-5"><section class="carte"><h2>Liaison Wi-Fi</h2>
+      <p>Connectez le poste qui héberge Django au réseau <strong>RoboAgri-Kin</strong>.</p>
+      <p role="status" id="liaison">Connexion à vérifier.</p>
+      <button type="button" id="verifier" class="btn btn-success">Vérifier la connexion</button>
+    </section>
+    <section class="carte mt-4"><h2>Suivi du terrain</h2>
+      <a href="robot.html">Consulter l’état du robot</a><br><a href="missions.html">Voir les missions</a>
+    </section></div>
+  </div>
+</main>
+<script src="js/api.js"></script><script src="js/app.js"></script><script src="js/pilotage.js"></script>
+</body></html>

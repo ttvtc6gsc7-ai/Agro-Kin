@@ -35,6 +35,15 @@
         ],
         "createdAt": "2026-11-20T09:09:42.272Z",
         "reason": "Agent review: mission-stat has 1.4rem left padding alongside its desktop border; mobile removes the left border and adds .8rem top padding alongside its top border. The detector combines mutually exclusive responsive styles."
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "frontend/pilotage.html"
+        ],
+        "createdAt": "2026-11-24T20:04:40.213Z",
+        "reason": "Revue Codex : le fond du pilotage est uni. Les dégradés de la feuille commune ciblent exclusivement .landing-page, absente de cette page."
       }
     ]
   }

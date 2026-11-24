@@ -52,3 +52,9 @@ Depuis `backend` :
 ```
 
 Les réglages actuels sont destinés au développement local. Les seuils, étalonnages, autorisations et envois restent disponibles via l’administration ou l’API métier existante. La nouvelle interface prépare les missions et consulte les opérations.
+
+## Pilotage Wi-Fi de l’ESP32
+
+Connectez le poste Django au Wi-Fi RoboAgri-Kin et ouvrez Pilotage du robot et autres avec un compte Operateur ou Administrateur. Vérifiez la connexion, puis maintenez une direction (souris, tactile ou touche Entrée/Espace sur le bouton). Relâcher demande l’arrêt. La cible est la carte du réseau local à 192.168.4.1, indépendamment du robot sélectionné dans la surveillance.
+
+La carte doit fournir GET /status (JSON avec le champ texte etat) et GET /cmd?move=F|B|L|R|S. Le firmware doit arrêter les moteurs si les commandes cessent. Le ZIP fournit le protocole et la télécommande, sans sketch ni brochage.
