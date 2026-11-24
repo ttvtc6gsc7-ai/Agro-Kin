@@ -1,6 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from . import views
+from . import pilotage, views
 
 router = DefaultRouter()
 router.register("cultures", views.CultureViewSet)
@@ -16,6 +16,7 @@ router.register("irrigations", views.IrrigationViewSet)
 router.register("incidents", views.IncidentViewSet)
 
 urlpatterns = [
+    path("pilotage/", pilotage.pilotage),
     path("supervision/", views.supervision),
     path("auth/me/", views.me), path("utilisateurs/", views.users), path("tableau-de-bord/", views.dashboard), path("rapports/", views.rapport),
     path("robot/mesures/", views.robot_mesures), path("robot/missions/", views.robot_missions),

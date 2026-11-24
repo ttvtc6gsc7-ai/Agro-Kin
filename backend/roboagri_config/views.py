@@ -13,6 +13,7 @@ PAGES_FRONTEND = frozenset({
     "dashboard",
     "parcelles",
     "robot",
+    "pilotage",
     "mesures",
     "missions",
     "irrigation",
